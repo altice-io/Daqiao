@@ -23,7 +23,8 @@ pub struct PledgeInfo <U, V>{
   account_id: U,
   pledge_amount: V,
   can_withdraw: bool,
-  withdraw_history: Vec<Vec<u8>>
+  withdraw_history: Vec<Vec<u8>>,
+  withdraw_address: Vec<u8>
 }
 
 decl_storage! {
@@ -101,6 +102,7 @@ impl<T: Trait> Module<T> {
       pledge_amount: amount,
       can_withdraw: true,
       withdraw_history: Vec::new(),
+      withdraw_address: Vec::new(),
     };
 
     // mint
@@ -123,6 +125,7 @@ impl<T: Trait> Module<T> {
     };
     let mut pi = <PledgeRecords<T>>::get(ext_txid.clone());
     let amount = pi.pledge_amount;
+    pi.withdraw_address = ext_address;
 
     // 检查余额是否足够
     let balance = <tokens::Module<T>>::balance_of(&(token_id.clone(), sender.clone()));
