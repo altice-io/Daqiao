@@ -1,6 +1,6 @@
 # DaQiao
 
-[中文说明](##中文说明-1)
+[中文说明](#中文说明-1)
 -----
 
 ## 1 Background and Goals
@@ -61,7 +61,7 @@ Runtime mainly stores `ChainToken`and `PledgeRecords`, and `ChainToken` stores t
 
 Runtime has three main interfaces, namely `register`, `pledge`, `withdraw`.
 
-** register** is the interface between the external chain and DaQiao.
+**register** is the interface between the external chain and DaQiao.
 
 ```
     pub fn register(origin, chain_id: ChainId, token_id: TokenId<T>) -> Result {
@@ -70,7 +70,7 @@ Runtime has three main interfaces, namely `register`, `pledge`, `withdraw`.
     
 ```
 
-** pledge** External Chain Trading Interface to DaQiao Pledge.
+**pledge** External Chain Trading Interface to DaQiao Pledge.
 
 ```
     pub fn pledge(origin, chain_id: ChainId, ext_txid: ExtTxID) -> Result {
@@ -80,7 +80,7 @@ Runtime has three main interfaces, namely `register`, `pledge`, `withdraw`.
 The main process of pledge is as follows:
 ![图片](https://github.com/altice-io/Daqiao/blob/master/image/pledge.png?raw=true)
 
-** withdraw** is the interface to revoke the pledge of external chain.
+**withdraw** is the interface to revoke the pledge of external chain.
 
 ```
     pub fn withdraw(origin, chain_id: ChainId, ext_txid: ExtTxID, ext_address: Vec<u8>,value: T::TokenBalance) -> Result {
@@ -95,6 +95,8 @@ The main process of revocation is as follows:
 ## 4 RoadMap
 
 =====
+# 中文说明
+
 ## 1 背景和目标
 
 Polkadot 是一种异构的多链架构，旨在成为可扩展的异构多链框架，在确保安全和传输的基本功能下，通过非信任节点的激励机制，弱化内生绑定关系，实现不同区块链系统之间的互联互通。
@@ -150,7 +152,7 @@ Runtime主要存储了 `ChainToken` 和`PledgeRecords` 两类信息， `ChainTok
 ```
 ### Interface
 Runtime主要有3个接口，分别是`register`,`pledge`,`withdraw`。
-**register**是外链和DaQiao关联的接口。
+**register** 是外链和DaQiao关联的接口。
 ```
     pub fn register(origin, chain_id: ChainId, token_id: TokenId<T>) -> Result {
       Self::_register(origin, chain_id, token_id)
