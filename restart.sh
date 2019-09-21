@@ -8,5 +8,6 @@ rm Cargo.lock
 cp Cargo.lock.good Cargo.lock
 cargo build
 
-cargo run -- purge-chain --dev -y
-cargo run -- --dev
+rm -rf /tmp/alice
+
+./target/debug/daqiao --chain local --port 30333 --base-path /tmp/alice --node-key 0000000000000000000000000000000000000000000000000000000000000001 --telemetry-url ws://telemetry.polkadot.io:1024 --validator --key //Alice --force-authoring
