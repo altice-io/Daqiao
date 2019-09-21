@@ -1,15 +1,15 @@
 
 extern crate qrml_tokens as tokens;
 
-use support::{decl_module, decl_storage, decl_event, StorageMap, dispatch::Result, ensure};
+use support::{decl_module, decl_storage, decl_event, StorageMap, StorageValue, dispatch::Result, ensure};
 use runtime_primitives::traits::{CheckedSub, Zero};
 use parity_codec::{Encode, Decode};
 use system::ensure_signed;
 use rstd::prelude::*;
 
 pub type TokenId<T> = <T as tokens::Trait>::TokenId;
-pub type ChainId = u32;
-pub type ExtTxID = Vec<u8>;
+// pub type ChainId = u32;
+// pub type ExtTxID = Vec<u8>;
 //pub type Hash = primitives::H256;
 
 pub trait Trait: system::Trait + tokens::Trait {
@@ -18,21 +18,22 @@ pub trait Trait: system::Trait + tokens::Trait {
 
 #[derive(Encode, Decode, Default, Clone, PartialEq, Debug)]
 pub struct PledgeInfo <U, V>{
-  chain_id: ChainId,
-  ext_txid: ExtTxID,
+  chain_id: u32,
+  ext_txid: Vec<u8>,
   account_id: U,
   pledge_amount: V,
   can_withdraw: bool,
-  withdraw_history: Vec<ExtTxID>
+  withdraw_history: Vec<Vec<u8>>
 }
 
 decl_storage! {
   trait Store for Module<T: Trait> as Daqiao {
+    DummyValue get(dummy_value): u32;
     // 外链id => token id
-    ChainToken get(chain_token): map ChainId => Option<TokenId<T>>;
+    ChainToken get(chain_token): map u32 => Option<T::TokenId>;
 
     // 外链质押txid => PledgeInfo
-    PledgeRecords get(pledge_records): map ExtTxID => PledgeInfo<T::AccountId, T::TokenBalance>;
+    PledgeRecords get(pledge_records): map Vec<u8> => PledgeInfo<T::AccountId, T::TokenBalance>;
   }
 }
 
@@ -42,33 +43,39 @@ decl_module! {
     fn deposit_event<T>() = default;
 
     // 关联ChainId和TokenId
-    pub fn register(origin, chain_id: ChainId, token_id: TokenId<T>) -> Result {
+    pub fn register(origin, chain_id: u32, token_id: T::TokenId) -> Result {
       Self::_register(origin, chain_id, token_id)
     }
 
     // 质押
-    pub fn pledge(origin, chain_id: ChainId, ext_txid: ExtTxID, amount: T::TokenBalance, reciever: T::AccountId) -> Result {
+    pub fn pledge(origin, chain_id: u32, ext_txid: Vec<u8>, amount: T::TokenBalance, reciever: T::AccountId) -> Result {
       Self::_pledge(origin, chain_id, ext_txid, amount, reciever)
     }
 
     // 提现
-    pub fn withdraw(origin, chain_id: ChainId, ext_txid: ExtTxID, ext_address: Vec<u8>) -> Result {
+    pub fn withdraw(origin, chain_id: u32, ext_txid: Vec<u8>, ext_address: Vec<u8>) -> Result {
       Self::_withdraw(origin, chain_id, ext_txid, ext_address)
     }
 
+    pub fn dummy(origin, x: u32, chain_id: u32) -> Result {
+      <DummyValue<T>>::put(x + chain_id as u32);
+      Self::deposit_event(RawEvent::DummyCalled(x));
+      Ok(())
+    }
   }
 }
 
 decl_event!(
   pub enum Event<T> where AccountId = <T as system::Trait>::AccountId, Balance = <T as tokens::Trait>::TokenBalance {
-    Pledged(ChainId, ExtTxID, AccountId, Balance),
-    Withdrawn(ChainId, ExtTxID, AccountId, Balance, Vec<u8>),
+    Pledged(u32, Vec<u8>, AccountId, Balance),
+    Withdrawn(u32, Vec<u8>, AccountId, Balance, Vec<u8>),
+    DummyCalled(u32),
   }
 );
 
 impl<T: Trait> Module<T> {
 
-  fn _register(origin: T::Origin, chain_id: ChainId, token_id: TokenId<T>) -> Result {
+  fn _register(origin: T::Origin, chain_id: u32, token_id: T::TokenId) -> Result {
     let _ = ensure_signed(origin)?;
     ensure!(!<ChainToken<T>>::exists(chain_id.clone()), "ChainId already exists.");
     <ChainToken<T>>::insert(chain_id, token_id);
@@ -76,7 +83,7 @@ impl<T: Trait> Module<T> {
   }
 
 
-  fn _pledge(origin: T::Origin, chain_id: ChainId, ext_txid: ExtTxID, amount: T::TokenBalance, reciever: T::AccountId) -> Result {
+  fn _pledge(origin: T::Origin, chain_id: u32, ext_txid: Vec<u8>, amount: T::TokenBalance, reciever: T::AccountId) -> Result {
     let sender = ensure_signed(origin)?;
     // TODO 验证 sender在admin list中
 
@@ -106,7 +113,7 @@ impl<T: Trait> Module<T> {
     Ok(())
   }
   
-  fn _withdraw(origin: T::Origin, chain_id: ChainId, ext_txid: ExtTxID, ext_address: Vec<u8>) -> Result {
+  fn _withdraw(origin: T::Origin, chain_id: u32, ext_txid: Vec<u8>, ext_address: Vec<u8>) -> Result {
     let sender = ensure_signed(origin) ?;
     ensure!(<PledgeRecords<T>>::exists(ext_txid.clone()), "This ext_txid PledgeRecords does not exist");
 
@@ -172,7 +179,7 @@ mod tests {
   impl Trait for Test {
     type Event = ();
   }
-  type TemplateModule = Module<Test>;
+  type Daqiao = Module<Test>;
 
   // This function basically just builds a genesis storage key/value store according to
   // our desired mockup.
@@ -180,14 +187,4 @@ mod tests {
     system::GenesisConfig::<Test>::default().build_storage().unwrap().0.into()
   }
 
-  #[test]
-  fn it_works_for_default_value() {
-    with_externalities(&mut new_test_ext(), || {
-      // Just a dummy test for the dummy funtion `do_something`
-      // calling the `do_something` function with a value 42
-      assert_ok!(TemplateModule::do_something(Origin::signed(1), 42));
-      // asserting that the stored value is equal to what we stored
-      assert_eq!(TemplateModule::something(), Some(42));
-    });
-  }
 }
