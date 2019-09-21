@@ -125,7 +125,7 @@ impl<T: Trait> Module<T> {
     };
     let mut pi = <PledgeRecords<T>>::get(ext_txid.clone());
     let amount = pi.pledge_amount;
-    pi.withdraw_address = ext_address;
+    pi.withdraw_address = ext_address.clone();
 
     // 检查余额是否足够
     let balance = <tokens::Module<T>>::balance_of(&(token_id.clone(), sender.clone()));
