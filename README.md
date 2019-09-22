@@ -95,6 +95,10 @@ The main process of revocation is as follows:
 
 ## 4 RoadMap
 
+1 Oct. ~ Nov. in 2019: Perfecting Basic Functions；
+2 Nov. ~ Dec. in 2019:Support Eth and Fabric exchange within DaQiao；
+3 Dec.~ Jan. in 2020: Support Wallet；
+
 =====
 # 中文说明
 
@@ -181,32 +185,6 @@ Runtime主要有3个接口，分别是`register`,`pledge`,`withdraw`。
 
 ## 4 RoadMap
 
-
-
-
-
-
-
-
-
-
-
-启动双节点
-
-./target/debug/daqiao --chain local \
---base-path /tmp/alice \
---alice \
---node-key 0000000000000000000000000000000000000000000000000000000000000001 \
---telemetry-url ws://telemetry.polkadot.io:1024 \
---validator \
---eth-chain ropsten \
---eth-base-path ${DATA_PATH_0}
-
-./target/debug/daqiao --chain local \
---base-path /tmp/bob \
---bootnodes /ip4/127.0.0.1/tcp/30333/p2p/QmRpheLN4JWdAnY7HGJfWFNbfkQCb6tFf4vvA6hgjMZKrR \
---bob \
---telemetry-url ws://telemetry.polkadot.io:1024 \
---validator \
---eth-chain ropsten \
---eth-base-path ${DATA_PATH_1}
+1 Oct. ~ Nov. in 2019: 完善项目基础功能；
+2 Nov. ~ Dec. in 2019: 支持Eth和Fabric在DaQiao内兑换；
+3 Dec.~ Jan. in 2020: 支持钱包等周边工具；
