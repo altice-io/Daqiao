@@ -95,9 +95,9 @@ The main process of revocation is as follows:
 
 ## 4 RoadMap
 
-1 Oct. ~ Nov. in 2019: Perfecting Basic Functions；
-2 Nov. ~ Dec. in 2019:Support Eth and Fabric exchange within DaQiao；
-3 Dec.~ Jan. in 2020: Support Wallet；
+1. Oct. ~ Nov. in 2019: Perfecting Basic Functions；
+2. Nov. ~ Dec. in 2019:Support Eth and Fabric exchange within DaQiao；
+3. Dec.~ Jan. in 2020: Support Wallet；
 
 =====
 # 中文说明
@@ -185,6 +185,6 @@ Runtime主要有3个接口，分别是`register`,`pledge`,`withdraw`。
 
 ## 4 RoadMap
 
-1 Oct. ~ Nov. in 2019: 完善项目基础功能；
-2 Nov. ~ Dec. in 2019: 支持Eth和Fabric在DaQiao内兑换；
-3 Dec.~ Jan. in 2020: 支持钱包等周边工具；
+1. Oct. ~ Nov. in 2019: 完善项目基础功能；
+2. Nov. ~ Dec. in 2019: 支持Eth和Fabric在DaQiao内兑换；
+3. Dec.~ Jan. in 2020: 支持钱包等周边工具；
