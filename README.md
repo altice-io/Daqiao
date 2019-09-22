@@ -51,10 +51,11 @@ Runtime mainly stores `ChainToken`and `PledgeRecords`, and `ChainToken` stores t
 
 ```
     // Third party chain Id => TokenId
-    ChainToken get(chain_token): map ChainId => Option<TokenId<T>>;
-    
+    ChainToken get(chain_token): map u32 => Option<T::TokenId>;
+
     // Third party chain TxId => PledgeInfo
-    PledgeRecords get(pledge_records): map ExtTxID => PledgeInfo<T::AccountId>;
+    PledgeRecords get(pledge_records): map Vec<u8> => PledgeInfo<T::AccountId, T::TokenBalance>;
+
 ```
 
 ### Interface
@@ -64,7 +65,7 @@ Runtime has three main interfaces, namely `register`, `pledge`, `withdraw`.
 **register** is the interface between the external chain and DaQiao.
 
 ```
-    pub fn register(origin, chain_id: ChainId, token_id: TokenId<T>) -> Result {
+    pub fn register(origin, chain_id: u32, token_id: T::TokenId) -> Result {
       Self::_register(origin, chain_id, token_id)
     }
     
@@ -73,8 +74,8 @@ Runtime has three main interfaces, namely `register`, `pledge`, `withdraw`.
 **pledge** External Chain Trading Interface to DaQiao Pledge.
 
 ```
-    pub fn pledge(origin, chain_id: ChainId, ext_txid: ExtTxID) -> Result {
-      Self::_pledge(origin, chain_id, ext_txid)
+    pub fn pledge(origin, chain_id: u32, ext_txid: Vec<u8>, amount: T::TokenBalance, reciever: T::AccountId) -> Result {
+      Self::_pledge(origin, chain_id, ext_txid, amount, reciever)
     }
 ```
 The main process of pledge is as follows:
@@ -83,8 +84,8 @@ The main process of pledge is as follows:
 **withdraw** is the interface to revoke the pledge of external chain.
 
 ```
-    pub fn withdraw(origin, chain_id: ChainId, ext_txid: ExtTxID, ext_address: Vec<u8>,value: T::TokenBalance) -> Result {
-      Self::_withdraw(origin, chain_id, ext_txid, ext_address, value)
+    pub fn withdraw(origin, chain_id: u32, ext_txid: Vec<u8>, ext_address: Vec<u8>) -> Result {
+      Self::_withdraw(origin, chain_id, ext_txid, ext_address)
     }
 
 ```
@@ -93,6 +94,10 @@ The main process of revocation is as follows:
 ![图片](https://github.com/altice-io/Daqiao/blob/master/image/withdraw.png?raw=true)
 
 ## 4 RoadMap
+
+1. Oct. ~ Nov. in 2019: Perfecting Basic Functions；
+2. Nov. ~ Dec. in 2019:Support Eth and Fabric exchange within DaQiao；
+3. Dec.~ Jan. in 2020: Support Wallet；
 
 =====
 # 中文说明
@@ -154,15 +159,15 @@ Runtime主要存储了 `ChainToken` 和`PledgeRecords` 两类信息， `ChainTok
 Runtime主要有3个接口，分别是`register`,`pledge`,`withdraw`。
 **register** 是外链和DaQiao关联的接口。
 ```
-    pub fn register(origin, chain_id: ChainId, token_id: TokenId<T>) -> Result {
+    pub fn register(origin, chain_id: u32, token_id: T::TokenId) -> Result {
       Self::_register(origin, chain_id, token_id)
     }
     
 ```
 **pledge** 外链交易到DaQiao质押的接口。
 ```
-    pub fn pledge(origin, chain_id: ChainId, ext_txid: ExtTxID) -> Result {
-      Self::_pledge(origin, chain_id, ext_txid)
+    pub fn pledge(origin, chain_id: u32, ext_txid: Vec<u8>, amount: T::TokenBalance, reciever: T::AccountId) -> Result {
+      Self::_pledge(origin, chain_id, ext_txid, amount, reciever)
     }
 ```
 质押的主要流程如下所示：
@@ -170,8 +175,8 @@ Runtime主要有3个接口，分别是`register`,`pledge`,`withdraw`。
 
 **withdraw**是撤销外链质押的接口。
 ```
-    pub fn withdraw(origin, chain_id: ChainId, ext_txid: ExtTxID, ext_address: Vec<u8>,value: T::TokenBalance) -> Result {
-      Self::_withdraw(origin, chain_id, ext_txid, ext_address, value)
+    pub fn withdraw(origin, chain_id: u32, ext_txid: Vec<u8>, ext_address: Vec<u8>) -> Result {
+      Self::_withdraw(origin, chain_id, ext_txid, ext_address)
     }
 
 ```
@@ -180,32 +185,6 @@ Runtime主要有3个接口，分别是`register`,`pledge`,`withdraw`。
 
 ## 4 RoadMap
 
-
-
-
-
-
-
-
-
-
-
-启动双节点
-
-./target/debug/daqiao --chain local \
---base-path /tmp/alice \
---alice \
---node-key 0000000000000000000000000000000000000000000000000000000000000001 \
---telemetry-url ws://telemetry.polkadot.io:1024 \
---validator \
---eth-chain ropsten \
---eth-base-path ${DATA_PATH_0}
-
-./target/debug/daqiao --chain local \
---base-path /tmp/bob \
---bootnodes /ip4/127.0.0.1/tcp/30333/p2p/QmRpheLN4JWdAnY7HGJfWFNbfkQCb6tFf4vvA6hgjMZKrR \
---bob \
---telemetry-url ws://telemetry.polkadot.io:1024 \
---validator \
---eth-chain ropsten \
---eth-base-path ${DATA_PATH_1}
+1. Oct. ~ Nov. in 2019: 完善项目基础功能；
+2. Nov. ~ Dec. in 2019: 支持Eth和Fabric在DaQiao内兑换；
+3. Dec.~ Jan. in 2020: 支持钱包等周边工具；
