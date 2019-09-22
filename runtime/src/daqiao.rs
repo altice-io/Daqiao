@@ -134,7 +134,7 @@ impl<T: Trait> Module<T> {
     ensure!(pi.can_withdraw && pi.account_id == sender.clone(), "Withdraw failed.");
 
     pi.can_withdraw = false;
-    pi.pledge_amount = Zero::zero();
+//    pi.pledge_amount = Zero::zero();
 
     <PledgeRecords<T>>::insert(ext_txid.clone(), pi);
     <tokens::Module<T>>::burn(token_id, sender.clone(), amount)?;
