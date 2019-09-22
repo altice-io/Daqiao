@@ -51,10 +51,11 @@ Runtime mainly stores `ChainToken`and `PledgeRecords`, and `ChainToken` stores t
 
 ```
     // Third party chain Id => TokenId
-    ChainToken get(chain_token): map ChainId => Option<TokenId<T>>;
-    
+    ChainToken get(chain_token): map u32 => Option<T::TokenId>;
+
     // Third party chain TxId => PledgeInfo
-    PledgeRecords get(pledge_records): map ExtTxID => PledgeInfo<T::AccountId>;
+    PledgeRecords get(pledge_records): map Vec<u8> => PledgeInfo<T::AccountId, T::TokenBalance>;
+
 ```
 
 ### Interface
@@ -64,7 +65,7 @@ Runtime has three main interfaces, namely `register`, `pledge`, `withdraw`.
 **register** is the interface between the external chain and DaQiao.
 
 ```
-    pub fn register(origin, chain_id: ChainId, token_id: TokenId<T>) -> Result {
+    pub fn register(origin, chain_id: u32, token_id: T::TokenId) -> Result {
       Self::_register(origin, chain_id, token_id)
     }
     
@@ -73,8 +74,8 @@ Runtime has three main interfaces, namely `register`, `pledge`, `withdraw`.
 **pledge** External Chain Trading Interface to DaQiao Pledge.
 
 ```
-    pub fn pledge(origin, chain_id: ChainId, ext_txid: ExtTxID) -> Result {
-      Self::_pledge(origin, chain_id, ext_txid)
+    pub fn pledge(origin, chain_id: u32, ext_txid: Vec<u8>, amount: T::TokenBalance, reciever: T::AccountId) -> Result {
+      Self::_pledge(origin, chain_id, ext_txid, amount, reciever)
     }
 ```
 The main process of pledge is as follows:
@@ -83,8 +84,8 @@ The main process of pledge is as follows:
 **withdraw** is the interface to revoke the pledge of external chain.
 
 ```
-    pub fn withdraw(origin, chain_id: ChainId, ext_txid: ExtTxID, ext_address: Vec<u8>,value: T::TokenBalance) -> Result {
-      Self::_withdraw(origin, chain_id, ext_txid, ext_address, value)
+    pub fn withdraw(origin, chain_id: u32, ext_txid: Vec<u8>, ext_address: Vec<u8>) -> Result {
+      Self::_withdraw(origin, chain_id, ext_txid, ext_address)
     }
 
 ```
@@ -154,15 +155,15 @@ Runtime主要存储了 `ChainToken` 和`PledgeRecords` 两类信息， `ChainTok
 Runtime主要有3个接口，分别是`register`,`pledge`,`withdraw`。
 **register** 是外链和DaQiao关联的接口。
 ```
-    pub fn register(origin, chain_id: ChainId, token_id: TokenId<T>) -> Result {
+    pub fn register(origin, chain_id: u32, token_id: T::TokenId) -> Result {
       Self::_register(origin, chain_id, token_id)
     }
     
 ```
 **pledge** 外链交易到DaQiao质押的接口。
 ```
-    pub fn pledge(origin, chain_id: ChainId, ext_txid: ExtTxID) -> Result {
-      Self::_pledge(origin, chain_id, ext_txid)
+    pub fn pledge(origin, chain_id: u32, ext_txid: Vec<u8>, amount: T::TokenBalance, reciever: T::AccountId) -> Result {
+      Self::_pledge(origin, chain_id, ext_txid, amount, reciever)
     }
 ```
 质押的主要流程如下所示：
@@ -170,8 +171,8 @@ Runtime主要有3个接口，分别是`register`,`pledge`,`withdraw`。
 
 **withdraw**是撤销外链质押的接口。
 ```
-    pub fn withdraw(origin, chain_id: ChainId, ext_txid: ExtTxID, ext_address: Vec<u8>,value: T::TokenBalance) -> Result {
-      Self::_withdraw(origin, chain_id, ext_txid, ext_address, value)
+    pub fn withdraw(origin, chain_id: u32, ext_txid: Vec<u8>, ext_address: Vec<u8>) -> Result {
+      Self::_withdraw(origin, chain_id, ext_txid, ext_address)
     }
 
 ```
